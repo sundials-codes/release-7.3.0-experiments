@@ -19,6 +19,7 @@ private:
   const Index grid_pts;
   const Real dx;
   const Real dx2;
+  const int threads;
 
   constexpr Index index(const Index i, const Index j, const Index comp) const noexcept
   {
@@ -26,11 +27,12 @@ private:
   }
 
 public:
-  constexpr GrayScottModel(const Index grid_pts_1D) noexcept
+  constexpr GrayScottModel(const Index grid_pts_1D, const int threads = 1) noexcept
       : grid_pts_1D(grid_pts_1D),
         grid_pts(grid_pts_1D * grid_pts_1D),
         dx(Real(2) / grid_pts_1D),
-        dx2(std::pow(dx, -2))
+        dx2(std::pow(dx, -2)),
+        threads(threads)
   {
   }
 
@@ -41,7 +43,7 @@ public:
 
   constexpr void initial_condition(Real *const y0) const noexcept
   {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts_1D; i++)
     {
       for (Index j = 0; j < grid_pts_1D; j++)
@@ -80,7 +82,7 @@ public:
   constexpr void jacobian(const Real *const y, Index *const indexvals, Index *const indexptrs, Real *const jac_data) const noexcept
   {
     // In CSR format
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts_1D; i++)
     {
       const auto i_prev = i == 0 ? grid_pts_1D - 1 : i - 1;
@@ -132,7 +134,7 @@ public:
 
   constexpr void f_diffusion(const Real *const y, Real *const f) const noexcept
   {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts_1D; i++)
     {
       const auto i_prev = i == 0 ? grid_pts_1D - 1 : i - 1;
@@ -157,7 +159,7 @@ public:
   template <bool Increment = false>
   constexpr void f_reaction(const Real *const y, Real *const f) const noexcept
   {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts; i++)
     {
       const auto u = y[2 * i];
@@ -179,7 +181,7 @@ public:
   }
 
   constexpr void evolve_reaction_u(const Real dt, const Real *const y, Real *const yNext) const noexcept {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts; i++)
     {
       const auto u = y[2 * i];
@@ -193,7 +195,7 @@ public:
   }
 
   constexpr void evolve_reaction_v(const Real dt, const Real *const y, Real *const yNext) const noexcept {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts; i++)
     {
       const auto u = y[2 * i];
@@ -207,7 +209,7 @@ public:
 
   template <typename Matrix>
   constexpr void jacobian_reaction(const Real *const y, const Matrix mat) const noexcept {
-    #pragma omp parallel for schedule(static) default(none)
+    #pragma omp parallel for schedule(static) default(none) num_threads(threads)
     for (Index i = 0; i < grid_pts_1D; i++)
     {
       for (Index j = 0; j < grid_pts_1D; j++)

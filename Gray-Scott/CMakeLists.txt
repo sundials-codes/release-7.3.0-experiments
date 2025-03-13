@@ -6,7 +6,7 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 find_package(OpenMP REQUIRED)
 # TODO: automatically download specific version of SUNDIALS
-find_package(SUNDIALS REQUIRED CONFIG PATHS "../sundials/install/lib64/cmake/sundials/")
+find_package(SUNDIALS REQUIRED CONFIG PATHS "../../sundials/install/lib64/cmake/sundials/")
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC
   SUNDIALS::core

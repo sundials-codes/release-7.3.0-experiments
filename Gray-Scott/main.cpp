@@ -12,10 +12,10 @@ int main(int argc, char *argv[]) {
   const Options<sunrealtype, sunindextype> opts(argc, argv);
   const sundials::Context ctx;
 
-  const GrayScottModel<sunrealtype, sunindextype> model(opts.grid_pts_1d);
+  const GrayScottModel<sunrealtype, sunindextype> model(opts.grid_pts_1d, opts.threads);
 
-  std::printf("Solving with %d threads\n", omp_get_max_threads());
-  const auto y = N_VNew_OpenMP(model.dim(), omp_get_max_threads(), ctx);
+  std::printf("Solving with %d threads\n", opts.threads);
+  const auto y = N_VNew_OpenMP(model.dim(), opts.threads, ctx);
   model.initial_condition(N_VGetArrayPointer(y));
 
   const auto integrator = [&]() -> std::unique_ptr<Integrator> {

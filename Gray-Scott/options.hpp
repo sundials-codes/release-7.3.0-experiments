@@ -27,6 +27,7 @@ struct Options {
   public:
     const std::string method;
     const std::string out_file;
+    const int threads;
     const Index grid_pts_1d;
     const int order;
     const Real dt;
@@ -37,6 +38,7 @@ struct Options {
     constexpr Options(int argc, const char * const argv[]) noexcept :
       method(parse("method", argc, argv, "ERK")),
       out_file(parse("out_file", argc, argv, "solution.txt")),
+      threads(parse("threads", argc, argv, 1)),
       grid_pts_1d(parse("grid_pts_1d", argc, argv, 128)),
       order(parse("order", argc, argv, 2)),
       dt(parse("dt", argc, argv, Real(0))),
