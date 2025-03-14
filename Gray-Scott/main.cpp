@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   std::printf("Runtime: %g\n\n", duration.count());
   integrator->print_stats();
 
-  FILE *f = fopen(opts.out_file.c_str(), "w");
+  FILE * const f = fopen(opts.out_file.c_str(), "w");
   std::fprintf(f, "%g\n", duration.count());
   N_VPrintFile(y, f);
   fclose(f);

@@ -3,7 +3,7 @@
 #include <string>
 #include <cstring>
 
-template <typename Real = double, typename Index = std::int64_t>
+template <typename Real = double, typename Index = std::size_t>
 struct Options {
   private:
     template <typename T>
