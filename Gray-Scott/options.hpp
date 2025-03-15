@@ -7,7 +7,7 @@ template <typename Real = double, typename Index = std::size_t>
 struct Options {
   private:
     template <typename T>
-    [[nodiscard]] constexpr static T parse(const char * const id, int argc, const char * const argv[], T def) noexcept {
+    [[nodiscard]] constexpr static T parse(const char * const id, const int argc, const char * const argv[], T def) noexcept {
       for (int i = 0; i < argc; ++i) {
         if (std::strcmp(argv[i], id) == 0 && i + 1 < argc) {
           if constexpr (std::is_same_v<T, Real>) {
@@ -35,7 +35,7 @@ struct Options {
     const Real rel_tol;
     const bool low_storage;
   
-    constexpr Options(int argc, const char * const argv[]) noexcept :
+    constexpr Options(const int argc, const char * const argv[]) noexcept :
       method(parse("method", argc, argv, "ERK")),
       out_file(parse("out_file", argc, argv, "solution.txt")),
       threads(parse("threads", argc, argv, 1)),
