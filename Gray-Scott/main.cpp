@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     } else if (opts.method == "Splitting") {
       return std::make_unique<Splitting>(model, y, ctx, opts);
     } else {
-      throw std::invalid_argument("Invalid method name");
+      throw std::invalid_argument("Invalid method name: " + opts.method);
     }
   }();
 

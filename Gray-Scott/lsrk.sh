@@ -7,7 +7,7 @@
 #SBATCH --array=0-23
 
 NAMES=("LSRK" "ERK" "DIRK")
-METHODS=("ERK" "ERK", "DIRK")
+METHODS=("ERK" "ERK" "DIRK")
 LOW_STORAGE=("true" "false" "false")
 TOLS=("1e-2" "1e-3" "1e-4" "1e-5" "1e-6" "1e-7" "1e-8" "1e-9")
 
@@ -23,4 +23,4 @@ mkdir -p data
   rel_tol ${TOLS[$TOL_INDEX]} \
   abs_tol 1e-13 \
   threads $SLURM_CPUS_PER_TASK \
-  out_file data/${NAMES[$$METHOD_INDEX]}_${TOLS[$TOL_INDEX]}.txt
+  out_file data/${NAMES[$METHOD_INDEX]}_${TOLS[$TOL_INDEX]}.txt

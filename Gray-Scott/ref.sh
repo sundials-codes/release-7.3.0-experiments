@@ -11,8 +11,8 @@ MESH_SIZE=${MESH_SIZES[$SLURM_ARRAY_TASK_ID]}
 
 mkdir -p data
 
-./gray_scott \
-  grid_pts_1d MESH_SIZE \
+./build/gray_scott \
+  grid_pts_1d $MESH_SIZE \
   method ERK \
   order 5 \
   rel_tol 1e-13 \
