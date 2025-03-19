@@ -21,6 +21,7 @@ public:
       arkode = ERKStepCreate(f, model.t0(), y, ctx);
       ARKodeSetOrder(arkode, opts.order);
     }
+    // TODO: remove and eliminate deadzone
     ARKodeSetFixedStep(arkode, opts.dt);
     ARKodeSStolerances(arkode, opts.rel_tol, opts.abs_tol);
     ARKodeSetStopTime(arkode, model.tf());
