@@ -14,7 +14,7 @@ private:
   static constexpr Real a = 0.04L;
   static constexpr Real b = 0.06L;
 
-  static constexpr std::array<Real, 2> tspan{0, 3500};
+  static constexpr std::array<Real, 2> tspan{0.0L, 3500.0L};
 
   const Index grid_pts_1d;
   const Index grid_pts;
@@ -188,8 +188,7 @@ public:
       const auto v = y[2 * i + 1];
       const auto v2 = std::pow(v, 2);
       const auto av2 = a + v2;
-      const auto expExpr = std::exp(dt * av2);
-      yNext[2 * i] = (a * (expExpr - 1 + u) + u * v2) / (expExpr * av2);
+      yNext[2 * i] = (a * (std::expm1(dt * av2) + u) + u * v2) / (std::exp(dt * av2) * av2);
       yNext[2 * i + 1] = v;
     }
   }
@@ -204,25 +203,6 @@ public:
       const auto uv = u * v;
       yNext[2 * i] = u;
       yNext[2 * i + 1] = ab * v / (uv + std::exp(ab * dt) * (ab - uv));
-    }
-  }
-
-  template <typename Matrix>
-  void jacobian_reaction(const Real *const y, const Matrix mat) const noexcept {
-    #pragma omp parallel for schedule(static) num_threads(threads)
-    for (Index i = 0; i < grid_pts_1d; i++)
-    {
-      for (Index j = 0; j < grid_pts_1d; j++)
-      {
-        const auto uIdx = index(i, j, 0);
-        const auto vIdx = index(i, j, 1);
-        const auto u = y[uIdx];
-        const auto v = y[vIdx];
-        mat(uIdx, uIdx) = -std::pow(v, 2) - a;
-        mat(uIdx, vIdx) = -2 * u * v;
-        mat(vIdx, uIdx) = std::pow(v, 2);
-        mat(vIdx, vIdx) = 2 * u * v - (a + b);
-      }
     }
   }
 };

@@ -15,7 +15,7 @@ include(FetchContent)
 FetchContent_Declare(
   sundials
   GIT_REPOSITORY https://github.com/LLNL/sundials
-  GIT_TAG v7.2.1
+  GIT_TAG feature/coeff-precision
   GIT_SHALLOW TRUE
 )
 set(ENABLE_OPENMP ON)
