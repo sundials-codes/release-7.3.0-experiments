@@ -16,8 +16,8 @@ using Plots
 
 # Lotka Volterra with 4 parameters
 function f(du, u, p, t)
-    du[1] = p[1] * u[1] - p[2] * u[1] * u[2]
-    du[2] = -p[3] * u[2] + p[4] * u[1] * u[2]
+    du[1] = -( p[1] * u[1] - p[2] * u[1] * u[2] )
+    du[2] = -( -p[3] * u[2] + p[4] * u[1] * u[2] )
 end
 
 function g(u, p)
@@ -46,15 +46,18 @@ end
 
 # Problem specification
 p = [1.5, 1.0, 3.0, 1.0]
-# u0 = [1.0; 1.0]
-u0 = [2.772850901841113, 0.2587108781425639]
-tspan = (1.0, 0.0)
+u0 = [1.0; 1.0]
+# u0 = [2.772850901841113, 0.2587108781425639]
+tspan = (0.0,1.0)
 rtol = 1e-14
 atol = 1e-14
 method = Vern9()
 
+# Change of variables
+tau = (tspan[2], tspan[1])
+
 # Integrate
-prob = ODEProblem(f, u0, tspan, p)
+prob = ODEProblem(f, u0, tau, p)
 sol = solve(prob, method, abstol=atol, reltol=rtol)
 println("OrdinaryDiffEq computed u(t_f): ", sol.u[end])
 
@@ -68,7 +71,7 @@ savefig("lotka_volterra_plot.png")
 # println("Continuous SciMLSensitivity computed sensitivities: ", res1)
 
 # Solve adjoint problem with discrete cost functional
-ts = tspan
+ts = tau
 res1 = adjoint_sensitivities(sol, method, t=ts, dgdu_discrete=dgdu_discrete!, abstol=atol, reltol=rtol)
 println("Discrete SciMLSensitivity computed sensitivities: ", res1)
 
