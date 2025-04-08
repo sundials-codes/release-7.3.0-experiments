@@ -4,9 +4,9 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=50
-#SBATCH --array=0-2
+#SBATCH --array=0-3
 
-MESH_SIZES=("256" "512" "1024")
+MESH_SIZES=("128" "256" "512" "1024")
 MESH_SIZE=${MESH_SIZES[$SLURM_ARRAY_TASK_ID]}
 
 mkdir -p data
