@@ -10,7 +10,6 @@ class DIRK : public Integrator
 {
 private:
   void *arkode{};
-  SUNAdaptController controller{};
   SUNMatrix mat{};
   SUNLinearSolver ls{};
 
@@ -33,11 +32,6 @@ public:
     ARKodeSetUserData(arkode, (void *)&model);
     ARKodeSetPredictorMethod(arkode, 1);
     ARKodeSetDeduceImplicitRhs(arkode, true);
-    ARKodeSetAdaptivityAdjustment(arkode, 0);
-    ARKodeSetSafetyFactor(arkode, 0.9);
-    controller = SUNAdaptController_Soderlind(ctx);
-    SUNAdaptController_SetParams_I(controller, 1);
-    SUNAdaptController_SetErrorBias(controller, 1);
 
     mat = SUNSparseMatrix(model.dim(), model.dim(), model.nnz(), CSR_MAT, ctx);
     ls = SUNLinSol_SPBCGS(y, SUN_PREC_NONE, -1, ctx);
@@ -49,7 +43,6 @@ public:
   {
     SUNMatDestroy(mat);
     SUNLinSolFree(ls);
-    SUNAdaptController_Destroy(controller);
     ARKodeFree(&arkode);
   }
 

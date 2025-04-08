@@ -9,7 +9,6 @@ class ERK : public Integrator
 {
 private:
   void *arkode{};
-  SUNAdaptController controller{};
 
 public:
   ERK(const Model &model, const N_Vector y, const sundials::Context &ctx, const Opts &opts) noexcept
@@ -21,22 +20,16 @@ public:
       arkode = ERKStepCreate(f, model.t0(), y, ctx);
       ARKodeSetOrder(arkode, opts.order);
     }
-    // TODO: remove and eliminate deadzone
+    
     ARKodeSetFixedStep(arkode, opts.dt);
     ARKodeSStolerances(arkode, opts.rel_tol, opts.abs_tol);
     ARKodeSetStopTime(arkode, model.tf());
     ARKodeSetMaxNumSteps(arkode, -1);
     ARKodeSetUserData(arkode, (void *)&model);
-    ARKodeSetAdaptivityAdjustment(arkode, 0);
-    ARKodeSetSafetyFactor(arkode, 0.9);
-    controller = SUNAdaptController_Soderlind(ctx);
-    SUNAdaptController_SetParams_I(controller, 1);
-    SUNAdaptController_SetErrorBias(controller, 1);
   }
 
   ~ERK() noexcept
   {
-    SUNAdaptController_Destroy(controller);
     ARKodeFree(&arkode);
   }
 
