@@ -21,7 +21,13 @@
 
 using Pkg
 
-Pkg.add(["OrdinaryDiffEq", "SciMLSensitivity", "ForwardDiff", "Zygote", "Plots"])
+Pkg.add([
+    PackageSpec(name="OrdinaryDiffEq", version="6.58.2"),
+    PackageSpec(name="SciMLSensitivity", version="7.46.0"),
+    PackageSpec(name="ForwardDiff", version="0.10.38"),
+    PackageSpec(name="Zygote", version="0.6.77"),
+    PackageSpec(name="Plots", version="1.40.13")
+])
 
 using OrdinaryDiffEq, SciMLSensitivity, ForwardDiff, Zygote, Plots
 
