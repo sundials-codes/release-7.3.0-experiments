@@ -138,6 +138,10 @@ int main(int argc, char* argv[])
   printf("Forward Solution at t = %" GSYM ":\n", t);
   N_VPrint(u);
 
+  /* Print integrator stats */
+  printf("CVODES Stats for Forward Solution:\n");
+  CVodePrintAllStats(cvode_mem, stdout, SUN_OUTPUTFORMAT_TABLE);
+
   /* Allocate memory for the adjoint solution vector */
   uB = N_VNew_Serial(NEQ, sunctx);
   if (check_retval((void*)uB, "N_VNew_Serial", 0)) { return 1; }
@@ -211,6 +215,10 @@ int main(int argc, char* argv[])
   printf("Adjoint Solution at t = %" GSYM ":\n", t);
   N_VPrint(uB);
   N_VPrint(qB);
+
+  /* Print backkward integrator stats */
+  printf("CVODES Stats for Adjoint Integration:\n");
+  CVodePrintAllStats(CVodeGetAdjCVodeBmem(cvode_mem, which), stdout, SUN_OUTPUTFORMAT_TABLE);
 
   /* Free memory */
   N_VDestroy(u);
