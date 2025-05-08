@@ -19,6 +19,10 @@
 # p  = [1.5, 1.0, 3.0, 1.0].
 # ---------------------------------------------------------------
 
+using Pkg
+
+Pkg.add(["OrdinaryDiffEq", "SciMLSensitivity", "ForwardDiff", "Zygote", "Plots"])
+
 using OrdinaryDiffEq, SciMLSensitivity, ForwardDiff, Zygote, Plots
 
 # Lotka Volterra with 4 parameters

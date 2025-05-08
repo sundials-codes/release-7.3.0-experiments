@@ -20,7 +20,8 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 Julia:
 ```shell
-$
+$ julia --version
+julia version 1.8.3
 ```
 
 ## Building
