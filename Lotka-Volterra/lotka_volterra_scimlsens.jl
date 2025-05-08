@@ -72,7 +72,7 @@ method = Vern9()
 # Integrate with OrdinaryDiffEq
 prob = ODEProblem(f, u0, tspan, p)
 sol = solve(prob, method, abstol=atol, reltol=rtol)
-println("OrdinaryDiffEq computed u(t_f): ", sol.u[end])
+println("OrdinaryDiffEq computed ||u(t_f)||: ", norm(sol.u[end]))
 
 # Plot forward solution
 plot(sol)
@@ -83,7 +83,7 @@ savefig("lotka_volterra_plot.png")
 # Solve adjoint problem with SciMLSensitivity
 ts = tspan
 res1 = adjoint_sensitivities(sol, method, t=ts, dgdu_discrete=dgdu_discrete!, abstol=atol, reltol=rtol)
-println("Discrete SciMLSensitivity computed sensitivities: ", res1)
+println("Discrete SciMLSensitivity computed sensitivities L2 norm: ", norm(res1))
 
 
 # Solve adjoint problem with forward-mode automatic differentiation
@@ -95,7 +95,7 @@ function G(up)
     g(A, up[3:end])
 end
 res2 = ForwardDiff.gradient(G, [u0; p])
-println("Discrete ForwardDiff computed sensitivities: ", res2)
+println("Discrete ForwardDiff computed sensitivities L2 norm: ", norm(res2))
 
 
 # Solve adjoint problem with reverse-mode automatic differentiation
@@ -106,4 +106,4 @@ function G(u, p)
     g(A, p)
 end
 res3 = Zygote.gradient(G, u0, p)
-println("Discrete Zygote (reverse mode) computed sensitivities: ", res3)
+println("Discrete Zygote (reverse mode) computed sensitivities L2 norm: ", norm(res3))

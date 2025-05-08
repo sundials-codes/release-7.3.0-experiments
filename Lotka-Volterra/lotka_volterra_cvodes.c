@@ -44,10 +44,10 @@
 #define T0  SUN_RCONST(0.0)  /* initial time         */
 #define TF  SUN_RCONST(10.0) /* final time           */
 #if defined(SUNDIALS_SINGLE_PRECISION)
-#define RTOL SUN_RCONST(1.0e-5) /* relative tolerance   */
-#define ATOL SUN_RCONST(1.0e-8) /* absolute tolerance   */
+#define RTOL SUN_RCONST(1.0e-6) /* relative tolerance   */
+#define ATOL SUN_RCONST(1.0e-6) /* absolute tolerance   */
 #else
-#define RTOL SUN_RCONST(1.0e-10) /* relative tolerance   */
+#define RTOL SUN_RCONST(1.0e-14) /* relative tolerance   */
 #define ATOL SUN_RCONST(1.0e-14) /* absolute tolerance   */
 #endif
 #define STEPS 5 /* checkpoint interval  */

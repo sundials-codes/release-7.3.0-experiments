@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
   printf("Forward Solution:\n");
   N_VPrint(u);
 
-  printf("ARKODE Stats for Forward Solution:\n");
+  printf("\nARKODE Stats for Forward Solution:\n");
   retval = ARKodePrintAllStats(arkode_mem, stdout, SUN_OUTPUTFORMAT_TABLE);
   if (check_retval(&retval, "ARKodePrintAllStats", 1)) { return 1; }
   printf("\n");
@@ -177,14 +177,14 @@ int main(int argc, char* argv[])
   //
 
   sunindextype num_params = 4;
-  N_Vector sensu0         = N_VClone(u);
+  N_Vector sensu          = N_VClone(u);
   N_Vector sensp          = N_VNew_Serial(num_params, sunctx);
-  N_Vector sens[2]        = {sensu0, sensp};
+  N_Vector sens[2]        = {sensu, sensp};
   N_Vector sf             = N_VNew_ManyVector(2, sens, sunctx);
 
   // Set the terminal condition for the adjoint system, which
   // should be the the gradient of our cost function at tf.
-  dgdu(u, sensu0, params);
+  dgdu(u, sensu, params);
   dgdp(u, sensp, params);
 
   printf("Adjoint terminal condition:\n");
@@ -211,11 +211,14 @@ int main(int argc, char* argv[])
   if (check_retval(&retval, "SUNAdjointStepper_PrintAllStats", 1)) { return 1; }
   printf("\n");
 
+  printf("L2 Norm of Foward Solution, dg/dy0, dg/dp: %.16e, %.16e, %.16e\n", 
+        SUNRsqrt(N_VDotProd(u, u)), SUNRsqrt(N_VDotProd(sensu,sensu)), SUNRsqrt(N_VDotProd(sensp,sensp)));
+
   //
   // Cleanup
   //
 
-  N_VDestroy(sensu0);
+  N_VDestroy(sensu);
   N_VDestroy(sensp);
   N_VDestroy(sf);
   N_VDestroy(u);
