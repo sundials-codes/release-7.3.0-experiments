@@ -1,4 +1,6 @@
 # ---------------------------------------------------------------
+# Programmer(s): Cody J. Balos @ LLNL
+# ---------------------------------------------------------------
 # SUNDIALS Copyright Start
 # Copyright (c) 2002-2025, Lawrence Livermore National Security
 # and Southern Methodist University.
@@ -9,10 +11,25 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # SUNDIALS Copyright End
 # ---------------------------------------------------------------
+# This example solves the Lotka-Volterra ODE with four parameters,
+#     u = [dx/dt] = [ p_0*x - p_1*x*y  ]
+#         [dy/dt]   [ -p_2*y + p_3*x*y ].
+#
+# The initial condition is u(t_0) = 1.0 and we use the parameters
+# p  = [1.5, 1.0, 3.0, 1.0].
+# ---------------------------------------------------------------
 
-using OrdinaryDiffEq, SciMLSensitivity, LinearAlgebra
-using QuadGK, ForwardDiff, Zygote
-using Plots
+using Pkg
+
+Pkg.add([
+    PackageSpec(name="OrdinaryDiffEq", version="6.58.2"),
+    PackageSpec(name="SciMLSensitivity", version="7.46.0"),
+    PackageSpec(name="ForwardDiff", version="0.10.38"),
+    PackageSpec(name="Zygote", version="0.6.77"),
+    PackageSpec(name="Plots", version="1.40.13")
+])
+
+using LinearAlgebra, OrdinaryDiffEq, SciMLSensitivity, ForwardDiff, Zygote, Plots
 
 # Lotka Volterra with 4 parameters
 function f(du, u, p, t)
@@ -47,33 +64,29 @@ end
 # Problem specification
 p = [1.5, 1.0, 3.0, 1.0]
 u0 = [1.0; 1.0]
-tspan = (0.0, 1.0)
+tspan = (0.0, 10.0)
 rtol = 1e-14
 atol = 1e-14
-method = Vern9()
+method = Tsit5()
 
-# Integrate
+# Integrate with OrdinaryDiffEq
 prob = ODEProblem(f, u0, tspan, p)
 sol = solve(prob, method, abstol=atol, reltol=rtol)
-println("OrdinaryDiffEq computed u(t_f): ", sol.u[end])
+println("OrdinaryDiffEq computed ||u(t_f)||: ", norm(sol.u[end]))
 
+# Plot forward solution
 plot(sol)
 savefig("lotka_volterra_plot.png")
 
 # --------- Setup Adjoint Problem
 
-# # Solve adjoint problem with continuous cost functional
-# res1 = adjoint_sensitivities(sol, method, dgdu_continuous=dgdu_continuous!, dgdp_continuous=dgdp!, g=g, abstol=atol, reltol=rtol)
-# println("Continuous SciMLSensitivity computed sensitivities: ", res1)
-
-# Solve adjoint problem with discrete cost functional
 ts = tspan
+
+# Solve adjoint problem with SciMLSensitivity
 res1 = adjoint_sensitivities(sol, method, t=ts, dgdu_discrete=dgdu_discrete!, abstol=atol, reltol=rtol)
-println("Discrete SciMLSensitivity computed sensitivities: ", res1)
+println("Discrete SciMLSensitivity computed sensitivities L2 norm: ", norm(res1))
 
-# --------- Validate against ForwardDiff and Zygote
-
-# Discrete functional
+# Solve adjoint problem with forward-mode automatic differentiation
 function G(up)
     tmp_prob = remake(prob, u0=up[1:2], p=up[3:end])
     sol = solve(tmp_prob, method, abstol=atol, reltol=rtol, saveat=ts,
@@ -82,8 +95,9 @@ function G(up)
     g(A, up[3:end])
 end
 res2 = ForwardDiff.gradient(G, [u0; p])
-println("Discrete ForwardDiff computed sensitivities: ", res2)
+println("Discrete ForwardDiff computed sensitivities L2 norm: ", norm(res2[1:2]), " ", norm(res2[3:end]))
 
+# Solve adjoint problem with reverse-mode automatic differentiation
 function G(u, p)
     tmp_prob = remake(prob, u0=u, p=p)
     sol = solve(tmp_prob, method, abstol=atol, reltol=rtol, saveat=ts)
@@ -91,4 +105,5 @@ function G(u, p)
     g(A, p)
 end
 res3 = Zygote.gradient(G, u0, p)
-println("Discrete Zygote (reverse mode) computed sensitivities: ", res3)
+println("Discrete Zygote (reverse mode) computed sensitivities L2 norm: ", norm(res3[1]), " ", norm(res3[2]))
+
