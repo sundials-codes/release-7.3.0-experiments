@@ -182,9 +182,9 @@ To run the Julia version as done for the paper:
 
 ```shell
 $ cd Lotka-Volterra
-$ julia lotka_volterra_scimlsens.jl
-OrdinaryDiffEq computed u(t_f): [2.772850901841112, 0.2587108781425638]
-Discrete SciMLSensitivity computed sensitivities: ([3.52025689526615, -2.192713376465053], [4.341147542533375 -2.000933816791803 1.0101206767629012 -1.3955943267337887])
-Discrete ForwardDiff computed sensitivities: [3.520256895266153, -2.19271337646507, 4.341147542533402, -2.0009338167918025, 1.010120676762905, -1.3955943267337998]
-Discrete Zygote (reverse mode) computed sensitivities: ([3.520256895266156, -2.1927133764650715], [4.341147542533407, -2.000933816791805, 1.010120676762906, -1.3955943267338018])
+$ julia lotka_volterra_zygote.jl
+OrdinaryDiffEq computed ||u(t_f)||: 1.3714668933550804
+Discrete SciMLSensitivity computed sensitivities L2 norm: 0.7644151699219316
+Discrete ForwardDiff computed sensitivities L2 norm: 0.2999335581117122 0.7031147934185299
+Discrete Zygote (reverse mode) computed sensitivities L2 norm: 0.2999335581120665 0.703114793419319
 ```
