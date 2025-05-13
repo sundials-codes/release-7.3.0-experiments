@@ -26,7 +26,7 @@ def get_ref_sol(opts):
 
 def sol_error(ref_sol, sol):
     err = np.linalg.norm(ref_sol[1:] - sol[1:]) / np.linalg.norm(ref_sol[1:])
-    # if relative error is above 10 it might as well have
+    # if relative error is above 10, exclude from plot
     return np.NAN if err > 10 else err
 
 

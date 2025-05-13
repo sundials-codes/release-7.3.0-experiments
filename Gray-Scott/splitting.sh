@@ -16,7 +16,7 @@ ORDER=${ORDERS[$ORDER_INDEX]}
 
 mkdir -p data
 
-./build/gray_scott \
+../builddir/gray_scott \
   grid_pts_1d 128 \
   method Splitting \
   order $ORDER \

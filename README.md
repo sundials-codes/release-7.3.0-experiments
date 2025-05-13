@@ -4,7 +4,7 @@ This repository contains experiments used in the SUNDIALS v7.3.0 release paper.
 
 ## Prerequisites
 
-A C and C++ compiler as well as [CMake](https://cmake.org/) are needed to build the SUNDIALS-based experiments.
+A C and C++ compiler, [CMake](https://cmake.org/), and [OpenMP](https://www.openmp.org/) are needed to build the SUNDIALS-based experiments.
 For the Julia experiment, the [Julia language](https://julialang.org/) is required.
 
 The specific compilers and library versions used for the release paper are:
@@ -34,16 +34,37 @@ cmake -S . -B builddir
 cmake --build builddir -j8 
 ```
 
-The Julia experiment is self-contained and will install the Julia packages it requires.
+The Julia experiment is self-contained and will install the Julia packages it
+requires.
 
 ## Running
 
-### Gray-Scott
+### Gray–Scott
 
-To run the Gray-Scott problem as done for the paper:
+Slurm batch scripts are provided to run the Gray–Scott experiments. To generate
+a reference solution and the operator splitting results, set the CMake option
+`SUNDIALS_PRECISION` to `EXTENDED` and execute the following commands:
 
 ```shell
-$ 
+cd Gray-Scott
+mkdir data
+sbatch ref.sh
+sbatch splitting.sh
+```
+
+Finally, return the `SUNDIALS_PRECISION` to `DOUBLE` for the LSRK experiments
+and run
+
+```shell
+sbatch lsrk.sh
+```
+
+The solutions and runtimes are writtin into the `data` directory. A Python
+script is included to convert these into CSV tables:
+
+```shell
+python3 postprocess.py --method Splitting --grid_pts_1d 128 --plot
+python3 postprocess.py --method LSRK --grid_pts_1d 1024 --plot
 ```
 
 ### Lotka Volterra
