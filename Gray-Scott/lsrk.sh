@@ -16,7 +16,7 @@ METHOD_INDEX=$((SLURM_ARRAY_TASK_ID % ${#METHODS[@]}))
 
 mkdir -p data
 
-./build/gray_scott \
+../builddir/gray_scott \
   grid_pts_1d 1024 \
   method ${METHODS[$METHOD_INDEX]} \
   low_storage ${LOW_STORAGE[$METHOD_INDEX]} \
