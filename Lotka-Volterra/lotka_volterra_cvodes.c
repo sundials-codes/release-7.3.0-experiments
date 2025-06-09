@@ -216,6 +216,9 @@ int main(int argc, char* argv[])
   N_VPrint(uB);
   N_VPrint(qB);
 
+  printf("L2 Norm of u, dg/du0, dg/dp: %.16e, %.16e, %.16e\n", 
+    SUNRsqrt(N_VDotProd(u,u)), SUNRsqrt(N_VDotProd(uB,uB)), SUNRsqrt(N_VDotProd(qB,qB)));
+
   /* Print backkward integrator stats */
   printf("CVODES Stats for Adjoint Integration:\n");
   CVodePrintAllStats(CVodeGetAdjCVodeBmem(cvode_mem, which), stdout, SUN_OUTPUTFORMAT_TABLE);

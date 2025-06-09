@@ -46,3 +46,24 @@ add_executable(lotka_volterra_cvodes Lotka-Volterra/lotka_volterra_cvodes.c)
   target_link_libraries(lotka_volterra_cvodes PUBLIC
     SUNDIALS::core
     SUNDIALS::cvodes)
+
+# Custom command to copy run_experiment.sh when it changes
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/run_experiment.sh
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/Lotka-Volterra/run_experiment.sh ${CMAKE_BINARY_DIR}/run_experiment.sh
+  DEPENDS ${CMAKE_SOURCE_DIR}/Lotka-Volterra/run_experiment.sh
+  COMMENT "Copying run_experiment.sh to build directory if changed"
+)
+
+# Custom command to copy convergence_plot.py when it changes
+add_custom_command(
+  OUTPUT ${CMAKE_BINARY_DIR}/convergence_plot.py
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/Lotka-Volterra/convergence_plot.py ${CMAKE_BINARY_DIR}/convergence_plot.py
+  DEPENDS ${CMAKE_SOURCE_DIR}/Lotka-Volterra/convergence_plot.py
+  COMMENT "Copying convergence_plot.py to build directory if changed"
+)
+
+# Custom target to group the script copies
+add_custom_target(copy_scripts ALL
+  DEPENDS ${CMAKE_BINARY_DIR}/run_experiment.sh ${CMAKE_BINARY_DIR}/convergence_plot.py
+)

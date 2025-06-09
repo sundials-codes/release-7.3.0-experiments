@@ -116,8 +116,29 @@ int main(int argc, char* argv[])
   const int order      = args.order;
   void* arkode_mem     = ARKStepCreate(lotka_volterra, NULL, t0, u, sunctx);
 
-  retval = ARKodeSetOrder(arkode_mem, order);
-  if (check_retval(&retval, "ARKodeSetOrder", 1)) { return 1; }
+  if (order < 3 || order > 5) {
+    retval = ARKodeSetOrder(arkode_mem, order);
+    if (check_retval(&retval, "ARKodeSetOrder", 1)) { return 1; }
+  } else {
+    switch (order) {
+      case 3:
+        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_BOGACKI_SHAMPINE_4_2_3);
+        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_ARK324L2SA_ERK_4_2_3);
+        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_SHU_OSHER_3_2_3);
+        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_KNOTH_WOLKE_3_3);
+        break;
+      case 4:
+        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_ZONNEVELD_5_3_4);
+        break;
+      case 5:
+        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_TSITOURAS_7_4_5);
+        break;
+      default:
+        printf("ERROR: should not be here, contact sundials-users@llnl.gov\n");
+        return 1;
+    }
+    if (check_retval(&retval, "ARKStepSetTableNum", 1)) { return 1; }
+  }
 
   // Due to roundoff in the `t` accumulation within the integrator,
   // the integrator may actually use nsteps + 1 time steps to reach tf.
@@ -187,6 +208,9 @@ int main(int argc, char* argv[])
   dgdu(u, sensu, params);
   dgdp(u, sensp, params);
 
+  // N_VGetArrayPointer(sensu)[0] = SUN_RCONST(0.026344767575091188);
+  // N_VGetArrayPointer(sensu)[1] = SUN_RCONST(-0.09030892186397088);
+
   printf("Adjoint terminal condition:\n");
   N_VPrint(sf);
 
@@ -211,8 +235,12 @@ int main(int argc, char* argv[])
   if (check_retval(&retval, "SUNAdjointStepper_PrintAllStats", 1)) { return 1; }
   printf("\n");
 
-  printf("L2 Norm of Foward Solution, dg/dy0, dg/dp: %.16e, %.16e, %.16e\n", 
+  printf("L2 Norm of u, dg/du0, dg/dp: %.16e, %.16e, %.16e\n", 
         SUNRsqrt(N_VDotProd(u, u)), SUNRsqrt(N_VDotProd(sensu,sensu)), SUNRsqrt(N_VDotProd(sensp,sensp)));
+
+  // printf("L2 Norm of u, dg/du0, dg/dp: %.16e, %.16e, %.16e\n", 
+        // N_VMaxNorm(u), N_VMaxNorm(sensu), N_VMaxNorm(sensp));
+
 
   //
   // Cleanup

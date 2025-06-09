@@ -22,11 +22,11 @@
 using Pkg
 
 Pkg.add([
-    PackageSpec(name="OrdinaryDiffEq", version="6.58.2"),
-    PackageSpec(name="SciMLSensitivity", version="7.46.0"),
-    PackageSpec(name="ForwardDiff", version="0.10.38"),
-    PackageSpec(name="Zygote", version="0.6.77"),
-    PackageSpec(name="Plots", version="1.40.13")
+    PackageSpec(name="OrdinaryDiffEq"),
+    PackageSpec(name="SciMLSensitivity"),
+    PackageSpec(name="ForwardDiff"),
+    PackageSpec(name="Zygote"),
+    PackageSpec(name="Plots")
 ])
 
 using LinearAlgebra, OrdinaryDiffEq, SciMLSensitivity, ForwardDiff, Zygote, Plots
@@ -67,12 +67,18 @@ u0 = [1.0; 1.0]
 tspan = (0.0, 10.0)
 rtol = 1e-14
 atol = 1e-14
-method = Tsit5()
+method = BS3()
+# method = RK4()
+# method = Tsit5()
 
 # Integrate with OrdinaryDiffEq
 prob = ODEProblem(f, u0, tspan, p)
 sol = solve(prob, method, abstol=atol, reltol=rtol)
 println("OrdinaryDiffEq computed ||u(t_f)||: ", norm(sol.u[end]))
+
+term_cond = [0.0, 0.0, 0.0, 0.0] 
+dgdu_discrete!(term_cond, sol.u[end], p, 10., 0)
+println("Adjoint terminal condition: ", term_cond)
 
 # Plot forward solution
 plot(sol)
