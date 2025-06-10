@@ -1,7 +1,6 @@
 #include "gray_scott_model.hpp"
 #include "options.hpp"
 #include "erk.hpp"
-#include "dirk.hpp"
 #include "splitting.hpp"
 #include <stdexcept>
 #include <omp.h>
@@ -21,8 +20,6 @@ int main(int argc, char *argv[]) {
   const auto integrator = [&]() -> std::unique_ptr<Integrator> {
     if (opts.method == "ERK") {
       return std::make_unique<ERK>(model, y, ctx, opts);
-    } else if (opts.method == "DIRK") {
-      return std::make_unique<DIRK>(model, y, ctx, opts);
     } else if (opts.method == "Splitting") {
       return std::make_unique<Splitting>(model, y, ctx, opts);
     } else {
