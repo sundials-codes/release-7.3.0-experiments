@@ -71,7 +71,7 @@ function parse_commandline()
         arg_type = Int
         default = 3
         "--dt"
-        help = "Timestep size (default=0.0 - which means adaptive)"
+        help = "Step size (default=0.0 - which means adaptive)"
         arg_type = Float64
         default = 0.0
     end
@@ -105,15 +105,18 @@ end
 p = [1.5, 1.0, 3.0, 1.0]
 u0 = [1.0; 1.0]
 tspan = (0.0, 10.0)
-rtol = 1e-15
-atol = 1e-15
+rtol = 1e-14
+atol = 1e-14
 
 # Integrate with OrdinaryDiffEq
 prob = ODEProblem(f, u0, tspan, p)
-sol = solve(prob, method, dt=dt, adaptive=adaptive)
-sol = solve(prob, method, dt=dt, adaptive=adaptive, abstol=atol, reltol=rtol)
+if adaptive
+    sol = solve(prob, method, adaptive=adaptive, abstol=atol, reltol=rtol)
+else
+    sol = solve(prob, method, dt=dt, adaptive=adaptive)
+end
 println("OrdinaryDiffEq computed solution: ", sol.u[end])
-@printf("OrdinaryDiffEq computed ||u(%g)||: %.16e\n", sol.t[end], norm(sol.u[end]))
+sol_nrm = norm(sol.u[end])
 
 # Plot forward solution
 plot(sol)
@@ -126,10 +129,14 @@ ts = tspan
 # Solve adjoint problem with reverse-mode automatic differentiation
 function G(u, p)
     tmp_prob = remake(prob, u0=u, p=p)
-    sol = solve(tmp_prob, method, dt=dt, adaptive=adaptive, saveat=ts)
+    if adaptive
+        sol = solve(tmp_prob, method, adaptive=adaptive, abstol=atol, reltol=rtol, saveat=ts)
+    else
+        sol = solve(tmp_prob, method, dt=dt, adaptive=adaptive, saveat=ts)
+    end
     A = convert(Array, sol)
     g(A, p)
 end
 res3 = Zygote.gradient(G, u0, p)
-@printf("%s: %.16e, %.16e\n", "Discrete Zygote (reverse mode) computed sensitivities L2 norm", norm(res3[1]), norm(res3[2]))
+@printf("L2 Norm of u, dg/du0, dg/dp: %.16e, %.16e, %.16e\n", sol_nrm, norm(res3[1]), norm(res3[2]))
 

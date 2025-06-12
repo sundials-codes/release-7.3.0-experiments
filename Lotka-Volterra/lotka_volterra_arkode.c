@@ -19,10 +19,10 @@
  * The initial condition is u(t_0) = 1.0 and we use the parameters
  * p  = [1.5, 1.0, 3.0, 1.0]. The integration interval can be controlled via
  * the --tf command line argument, but by default it is t \in [0, 10.].
- * An explicit Runge--Kutta method is employed via the ARKStep time stepper
+ * An explicit Runge--Kutta method is employed via the ERKStep time stepper
  * provided by ARKODE. After solving the forward problem, adjoint sensitivity
  * analysis (ASA) is performed using the discrete adjoint method available with
- * with ARKStep in order to obtain the gradient of the scalar cost function,
+ * with ERKStep in order to obtain the gradient of the scalar cost function,
  *
  *    g(u(t_f), p) = || 1 - u(t_f, p) ||^2 / 2
  *
@@ -51,7 +51,7 @@
 #include <sunmemory/sunmemory_system.h>
 
 #include <arkode/arkode.h>
-#include <arkode/arkode_arkstep.h>
+#include <arkode/arkode_erkstep.h>
 #include "sundials/sundials_memory.h"
 #include "sundials/sundials_nvector.h"
 
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
   sunrealtype tf       = args.tf;
   const int nsteps     = (int)ceil(((tf - t0) / dt));
   const int order      = args.order;
-  void* arkode_mem     = ARKStepCreate(lotka_volterra, NULL, t0, u, sunctx);
+  void* arkode_mem     = ERKStepCreate(lotka_volterra, t0, u, sunctx);
 
   if (order < 3 || order > 5) {
     retval = ARKodeSetOrder(arkode_mem, order);
@@ -122,22 +122,22 @@ int main(int argc, char* argv[])
   } else {
     switch (order) {
       case 3:
-        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_BOGACKI_SHAMPINE_4_2_3);
-        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_ARK324L2SA_ERK_4_2_3);
-        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_SHU_OSHER_3_2_3);
-        // ARKStepSetTableNum(arkode_mem, -1, ARKODE_KNOTH_WOLKE_3_3);
+        retval = ERKStepSetTableNum(arkode_mem, ARKODE_BOGACKI_SHAMPINE_4_2_3);
+        // ERKStepSetTableNum(arkode_mem, -1, ARKODE_ARK324L2SA_ERK_4_2_3);
+        // ERKStepSetTableNum(arkode_mem, -1, ARKODE_SHU_OSHER_3_2_3);
+        // ERKStepSetTableNum(arkode_mem, -1, ARKODE_KNOTH_WOLKE_3_3);
         break;
       case 4:
-        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_ZONNEVELD_5_3_4);
+        retval = ERKStepSetTableNum(arkode_mem, ARKODE_ZONNEVELD_5_3_4);
         break;
       case 5:
-        retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_TSITOURAS_7_4_5);
+        retval = ERKStepSetTableNum(arkode_mem, ARKODE_TSITOURAS_7_4_5);
         break;
       default:
         printf("ERROR: should not be here, contact sundials-users@llnl.gov\n");
         return 1;
     }
-    if (check_retval(&retval, "ARKStepSetTableNum", 1)) { return 1; }
+    if (check_retval(&retval, "ERKStepSetTableNum", 1)) { return 1; }
   }
 
   // Due to roundoff in the `t` accumulation within the integrator,
@@ -180,8 +180,10 @@ int main(int argc, char* argv[])
   retval = ARKodeSetFixedStep(arkode_mem, dt);
   if (check_retval(&retval, "ARKodeSetFixedStep", 1)) { return 1; }
 
-  sunrealtype tret = t0;
+  retval = ARKodeSetStopTime(arkode_mem, tf);
+  if (check_retval(&retval, "ARKodeSetStopTime", 1)) { return 1; }
 
+  sunrealtype tret = t0;
   retval = ARKodeEvolve(arkode_mem, tf, u, &tret, ARK_NORMAL);
   if (check_retval(&retval, "ARKodeEvolve", 1)) { return 1; }
 
@@ -208,16 +210,13 @@ int main(int argc, char* argv[])
   dgdu(u, sensu, params);
   dgdp(u, sensp, params);
 
-  // N_VGetArrayPointer(sensu)[0] = SUN_RCONST(0.026344767575091188);
-  // N_VGetArrayPointer(sensu)[1] = SUN_RCONST(-0.09030892186397088);
-
   printf("Adjoint terminal condition:\n");
   N_VPrint(sf);
 
   SUNAdjointStepper adj_stepper;
-  retval = ARKStepCreateAdjointStepper(arkode_mem, adj_rhs, NULL, tf, sf,
+  retval = ERKStepCreateAdjointStepper(arkode_mem, adj_rhs, tf, sf,
                                        sunctx, &adj_stepper);
-  if (check_retval(&retval, "ARKStepCreateAdjointStepper", 1)) { return 1; }
+  if (check_retval(&retval, "ERKStepCreateAdjointStepper", 1)) { return 1; }
 
   //
   // Now compute the adjoint solution

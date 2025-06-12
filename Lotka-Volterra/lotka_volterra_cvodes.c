@@ -47,8 +47,8 @@
 #define RTOL SUN_RCONST(1.0e-6) /* relative tolerance   */
 #define ATOL SUN_RCONST(1.0e-6) /* absolute tolerance   */
 #else
-#define RTOL SUN_RCONST(1.0e-14) /* relative tolerance   */
-#define ATOL SUN_RCONST(1.0e-14) /* absolute tolerance   */
+#define RTOL SUN_RCONST(1.0e-15) /* relative tolerance   */
+#define ATOL SUN_RCONST(1.0e-15) /* absolute tolerance   */
 #endif
 #define STEPS 5 /* checkpoint interval  */
 
