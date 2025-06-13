@@ -90,7 +90,7 @@ elseif method_order == 4
 elseif method_order == 5
     method = Tsit5()
 else
-    error("Unsupported method order: $method_order. Supported orders are 3 (BS3), 4 (RK4), 5 (Tsit5).")
+    method = Vern9()
 end
 
 if dt == 0.0

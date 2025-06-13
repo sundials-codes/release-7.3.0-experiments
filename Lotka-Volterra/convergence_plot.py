@@ -31,26 +31,22 @@ arkode_results = {
     5: read_order_file("order_5.txt"),
 }
 
-julia_results = {
-    3: [
-        [3.4460721157298213e00, 1.7022038421162186e01, 4.2512634680696536e01],
-        [1.4277626494190556e00, 3.9305067593620624e-01, 7.2034654413397436e-01],
-        [1.3743209436710750e00, 2.9523474644399611e-01, 6.7990437330117948e-01],
-        [1.3716318659662541e00, 2.9866295566390133e-01, 6.9908494819093003e-01],
-        [1.3714766433766765e00, 2.9974295830965370e-01, 7.0256232105543859e-01],
-        [1.3714674653466032e00, 2.9990809842126731e-01, 7.0304342778177120e-01],
-    ]
+# generated with OrdinaryDiffEq.jl (adaptive, tight tolerances) and Zygote.jl
+# reference_sol = {
+#     # BS3
+#     3: np.array([1.3714668933552083e+00, 2.9993355811026640e-01, 7.0311479341530714e-01]),
+#     # RK4
+#     4: np.array([1.3714668933550507e+00, 2.9993355811233674e-01, 7.0311479341968508e-01]),
+#     # Tsit5
+#     5: np.array([1.3714668933550891e+00, 2.9993355811194400e-01, 7.0311479341903294e-01]),
+# }
+
+reference_sol = {
+    3: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
+    4: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
+    5: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
 }
 
-# generated with OrdinaryDiffEq.jl (adaptive, tight tolerances) and Zygote.jl
-reference_sol = {
-    # BS3
-    3: np.array([1.3714668933552083, 0.29993355811025496, 0.70311479341502030]),
-    # RK4
-    4: np.array([1.3714668933550507, 0.29993355811233674, 0.70311479341968513]),
-    # Tsit5
-    5: np.array([1.3714668933550890, 0.29993355811194400, 0.70311479341903290]),
-}
 
 # Compute absolute relative difference (entrywise)
 errors = {}
@@ -92,15 +88,20 @@ for i, component in enumerate(components):
             label="Error",
         )
 
-        slope_reference = [(step / step_sizes[0]) ** order for step in step_sizes]
+        eps = 1e-15
+        slope_reference = [(step / step_sizes[0]) ** order for step in step_sizes] 
+        error_vals = time_step_errors[:, i]
+        slope_vals = np.array(slope_reference)
+        scale = np.exp(np.mean(np.log((error_vals + eps) / (slope_vals + eps))))
+        slope_reference = [s * scale for s in slope_reference]
 
-        # plt.loglog(
-        #     step_sizes,
-        #     slope_reference,
-        #     linestyle="--",
-        #     color=colors[j],
-        #     label=f"{order}th Order Convergence",
-        # )
+        plt.loglog(
+            step_sizes,
+            slope_reference,
+            linestyle="--",
+            color=colors[j],
+            label=f"{order}th Order Convergence",
+        )
 
         j = j + 1
 
