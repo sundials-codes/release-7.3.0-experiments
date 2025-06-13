@@ -7,9 +7,9 @@ exe=./lotka_volterra_arkode
 
 while read -r h; do
     echo "Running with dt = $h"
-    $exe --check-freq 1 --order 3 --dt "$h" >> order_3.log
-    $exe --check-freq 1 --order 4 --dt "$h" >> order_4.log
-    $exe --check-freq 1 --order 5 --dt "$h" >> order_5.log
+    $exe --order 3 --dt "$h" >> order_3.log
+    $exe --order 4 --dt "$h" >> order_4.log
+    $exe --order 5 --dt "$h" >> order_5.log
 done < step_sizes.txt
 
 cat order_3.log | grep 'L2 Norm' >> order_3.txt
