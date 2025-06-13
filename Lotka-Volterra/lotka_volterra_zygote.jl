@@ -130,9 +130,9 @@ ts = tspan
 function G(u, p)
     tmp_prob = remake(prob, u0=u, p=p)
     if adaptive
-        sol = solve(tmp_prob, method, adaptive=adaptive, abstol=atol, reltol=rtol, saveat=ts)
+        sol = solve(tmp_prob, method, adaptive=adaptive, abstol=atol, reltol=rtol, saveat=ts, sensealg=ReverseDiffAdjoint())
     else
-        sol = solve(tmp_prob, method, dt=dt, adaptive=adaptive, saveat=ts)
+        sol = solve(tmp_prob, method, dt=dt, adaptive=adaptive, saveat=ts, sensealg=ReverseDiffAdjoint())
     end
     A = convert(Array, sol)
     g(A, p)

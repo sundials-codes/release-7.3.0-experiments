@@ -42,9 +42,9 @@ arkode_results = {
 # }
 
 reference_sol = {
-    3: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
-    4: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
-    5: np.array([1.3714668933552083e+00, 2.9993355811025496e-01, 7.0311479341502026e-01]),
+    3: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
+    4: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
+    5: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
 }
 
 
@@ -95,13 +95,13 @@ for i, component in enumerate(components):
         scale = np.exp(np.mean(np.log((error_vals + eps) / (slope_vals + eps))))
         slope_reference = [s * scale for s in slope_reference]
 
-        plt.loglog(
-            step_sizes,
-            slope_reference,
-            linestyle="--",
-            color=colors[j],
-            label=f"{order}th Order Convergence",
-        )
+        # plt.loglog(
+        #     step_sizes,
+        #     slope_reference,
+        #     linestyle="--",
+        #     color=colors[j],
+        #     label=f"{order}th Order Convergence",
+        # )
 
         j = j + 1
 
