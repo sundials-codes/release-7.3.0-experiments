@@ -1,6 +1,6 @@
-# SUNDIALS v7.3.0 Release Experiments
+# SUNDIALS v7.4.0 Release Experiments
 
-This repository contains experiments used in the SUNDIALS v7.3.0 release paper.
+This repository contains experiments used in the SUNDIALS v7.4.0 release paper.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ julia version 1.8.3
 To build the SUNDIALS-based C/C++ experiments:
 
 ```shell
-git clone https://github.com/sundials-codes/release-7.3.0-experiments.git && cd release-7.3.0-experiments
+git clone https://github.com/sundials-codes/release-7.4.0-experiments.git && cd release-7.4.0-experiments
 cmake -S . -B builddir
 cmake --build builddir -j8 
 ```
