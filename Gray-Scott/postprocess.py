@@ -31,7 +31,7 @@ def sol_error(ref_sol, sol):
 
 
 def get_lsrk_results(ref_sol, opts):
-    method_names = ("LSRK", "ERK", "DIRK")
+    method_names = ("LSRK", "ERK")
     tols = [f"1e-{i}" for i in range(2, 10)]
     times = np.full((len(tols), len(method_names)), np.nan)
     errors = np.copy(times)

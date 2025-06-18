@@ -4,11 +4,11 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=50
-#SBATCH --array=0-23
+#SBATCH --array=0-15
 
-NAMES=("LSRK" "ERK" "DIRK")
-METHODS=("ERK" "ERK" "DIRK")
-LOW_STORAGE=("true" "false" "false")
+NAMES=("LSRK" "ERK")
+METHODS=("ERK" "ERK")
+LOW_STORAGE=("true" "false")
 TOLS=("1e-2" "1e-3" "1e-4" "1e-5" "1e-6" "1e-7" "1e-8" "1e-9")
 
 TOL_INDEX=$((SLURM_ARRAY_TASK_ID / ${#METHODS[@]}))
