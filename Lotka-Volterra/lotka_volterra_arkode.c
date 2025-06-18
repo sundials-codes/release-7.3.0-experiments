@@ -124,9 +124,6 @@ int main(int argc, char *argv[]) {
     case 3:
       retval =
           ARKStepSetTableNum(arkode_mem, -1, ARKODE_BOGACKI_SHAMPINE_4_2_3);
-      // ARKStepSetTableNum(arkode_mem, -1, ARKODE_ARK324L2SA_ERK_4_2_3);
-      // ARKStepSetTableNum(arkode_mem, -1, ARKODE_SHU_OSHER_3_2_3);
-      // ARKStepSetTableNum(arkode_mem, -1, ARKODE_KNOTH_WOLKE_3_3);
       break;
     case 4:
       retval = ARKStepSetTableNum(arkode_mem, -1, ARKODE_ZONNEVELD_5_3_4);
