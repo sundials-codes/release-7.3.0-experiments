@@ -190,12 +190,7 @@ int main(int argc, char *argv[]) {
   if (check_retval(&retval, "ARKodeSetUseCompensatedSums", 1)) {
     return 1;
   }
-
-  // retval = ARKodeSetStopTime(arkode_mem, tf);
-  // if (check_retval(&retval, "ARKodeSetStopTime", 1)) {
-  //   return 1;
-  // }
-
+  
   sunrealtype tret = t0;
   retval = ARKodeEvolve(arkode_mem, tf, u, &tret, ARK_NORMAL);
   if (check_retval(&retval, "ARKodeEvolve", 1)) {

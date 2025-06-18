@@ -32,21 +32,11 @@ arkode_results = {
 }
 
 # generated with OrdinaryDiffEq.jl (adaptive, tight tolerances) and Zygote.jl
-# reference_sol = {
-#     # BS3
-#     3: np.array([1.3714668933552083e+00, 2.9993355811026640e-01, 7.0311479341530714e-01]),
-#     # RK4
-#     4: np.array([1.3714668933550507e+00, 2.9993355811233674e-01, 7.0311479341968508e-01]),
-#     # Tsit5
-#     5: np.array([1.3714668933550891e+00, 2.9993355811194400e-01, 7.0311479341903294e-01]),
-# }
-
 reference_sol = {
     3: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
     4: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
     5: np.array([1.3714668933552083e+00, 2.9993355811067846e-01, 7.0311479341618122e-01]),
 }
-
 
 # Compute absolute relative difference (entrywise)
 errors = {}
@@ -95,13 +85,13 @@ for i, component in enumerate(components):
         scale = np.exp(np.mean(np.log((error_vals + eps) / (slope_vals + eps))))
         slope_reference = [s * scale for s in slope_reference]
 
-        # plt.loglog(
-        #     step_sizes,
-        #     slope_reference,
-        #     linestyle="--",
-        #     color=colors[j],
-        #     label=f"{order}th Order Convergence",
-        # )
+        plt.loglog(
+            step_sizes,
+            slope_reference,
+            linestyle="--",
+            color=colors[j],
+            label=f"{order}th Order Convergence",
+        )
 
         j = j + 1
 
@@ -111,28 +101,3 @@ for i, component in enumerate(components):
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.legend()
     plt.savefig(f"convergence_{component}.png")
-
-# # Plot the difference between arkode_results and julia_results for each order and step size
-# for order in arkode_results:
-#     if order in julia_results:
-#         ark = np.array(arkode_results[order])
-#         jul = np.array(julia_results[order])
-#         diff = np.abs(ark - jul)
-#         for i, component in enumerate(components):
-#             plt.figure()
-#             plt.plot(
-#                 step_sizes[:len(diff)],
-#                 diff[:, i],
-#                 marker="o",
-#                 color=colors[i]
-#             )
-#             plt.xlabel("Time Step Size")
-#             plt.ylabel(f"Abs Difference {component}")
-#             plt.title(
-#                 f"ARKode vs Julia Abs Diff (order {order})\n{component}"
-#             )
-#             plt.grid(True, which="both", linestyle="--", linewidth=0.5)
-#             plt.savefig(
-#                 f"arkode_vs_julia_diff_order_{order}_{component}.png"
-#             )
-#             plt.close()

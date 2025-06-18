@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(sundials_release_730_paper CXX C)
+project(sundials_release_740_paper CXX C)
 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 set(CMAKE_CXX_STANDARD 17)
@@ -15,7 +15,7 @@ include(FetchContent)
 FetchContent_Declare(
   sundials
   GIT_REPOSITORY https://github.com/LLNL/sundials
-  GIT_TAG v7.3.0
+  GIT_TAG v7.4.0
   GIT_SHALLOW TRUE
 )
 set(ENABLE_OPENMP ON)
